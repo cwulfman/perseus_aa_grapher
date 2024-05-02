@@ -7,4 +7,11 @@
     - https://docs.pytest.org/en/stable/writing_plugins.html
 """
 
-# import pytest
+import pytest
+import json
+
+
+@pytest.fixture
+def artifact_test_data():
+    with open('tests/data/artifacts.json') as f:
+        return json.load(f)
