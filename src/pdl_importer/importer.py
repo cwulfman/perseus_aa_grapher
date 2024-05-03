@@ -34,7 +34,7 @@ class Importer:
 
             if otype == 'Vase':
                 vase_data = VaseData(**o)
-                vase = Vase(vase_data)
+                vase = Vase(vase_data, self.collections)
                 self.vases[vase.str_id] = vase
                 print(f"object type invalid: {otype}")
 
@@ -48,5 +48,11 @@ class Importer:
             self.images[image.str_id] = image
 
 
-    def get_collection(self, index):
+    def collection(self, index):
         return self.collections.get(index)
+
+    def image(self, index):
+        return self.images.get(index)
+
+    def link_collections():
+        pass

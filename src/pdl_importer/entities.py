@@ -45,15 +45,17 @@ class Artifact(AAObject):
         return f"Artifact('{self.id}')"
 
 
-
 class Vase(Artifact):
-    def __init__(self, data:VaseData) -> None:
+    def __init__(self, data:VaseData, collection_index) -> None:
         super().__init__(data)
         self._graph.bind("vase", vase)
         self.id = entity[self.str_id]
         self._graph.add((self.id, RDF.type, aat['300132254']))
         self._graph.add((self.id, RDFS.label, Literal(self._data.name)))
         self._graph.add((self.id, crm['P1i_is_identified_by'], Literal(self._data.name)))
+        self.collection_uri = collection_index.get(self._data.collection)
+        if self.collection_uri:
+            self._graph.add((self.id, crm["P50_has_current_keeper"], URIRef(self.collection_uri)))
         # Make the remaining attributes notes for now
         # self._graph.add((self.id, crm['P3_has_note'], Literal(self._data.collection)))
         self._graph.add((self.id, crm['P3_has_note'], Literal(self._data.summary)))
