@@ -55,7 +55,7 @@ class Vase(Artifact):
         self._graph.add((self.id, crm['P1i_is_identified_by'], Literal(self._data.name)))
         self.collection = collection_index.get(self._data.collection)
         if self.collection:
-            self._graph.add((self.id, crm["P50_has_current_keeper"], URIRef(self.collection.uri)))
+            self._graph.add((self.id, crm["P50_has_current_keeper"], URIRef(self.collection.id)))
         # Make the remaining attributes notes for now
         # self._graph.add((self.id, crm['P3_has_note'], Literal(self._data.collection)))
         self._graph.add((self.id, crm['P3_has_note'], Literal(self._data.summary)))
@@ -109,13 +109,11 @@ class Image:
 
 class Collection():
     def __init__(self, data) -> None:
-        self._graph = Graph()
+        self.graph = Graph()
         self.graph.bind('crm', crm)
         self.name = data.name.strip()
         self.key = hash(self.name)
-        self.id = URIRef(self.url)
-
-        self._graph.add()
+        self.id = URIRef(data.uri)
 
 
 def vase_graph(vases) -> Graph:

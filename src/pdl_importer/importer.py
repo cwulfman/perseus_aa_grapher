@@ -3,7 +3,7 @@ from csv import DictReader
 from pathlib import Path
 from rdflib import Graph, Namespace, RDF, RDFS, URIRef, Literal
 from pdl_importer.models import VaseData, ImageData, CollectionData
-from pdl_importer.entities import Vase, Image
+from pdl_importer.entities import Vase, Image, Collection
 
 
 
@@ -23,7 +23,7 @@ class Importer:
             reader: DictReader = DictReader(f)
             for row in reader:
                 c = CollectionData(**row)
-                self.collections[c.index] = c
+                self.collections[c.index] = Collection(c)
 
 
     def import_data(self, fpath) -> None:
@@ -61,3 +61,7 @@ class Importer:
         for v in self.vases.values():
             g += v._graph
         g.serialize(destination=fpath)
+
+
+    def export_images(self, fpath):
+        pass
