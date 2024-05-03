@@ -51,8 +51,13 @@ class Importer:
     def collection(self, index):
         return self.collections.get(index)
 
+
     def image(self, index):
         return self.images.get(index)
 
-    def link_collections():
-        pass
+
+    def export_vases(self, fpath):
+        g = Graph()
+        for v in self.vases.values():
+            g += v._graph
+        g.serialize(destination=fpath)

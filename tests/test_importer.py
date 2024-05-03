@@ -28,3 +28,12 @@ def test_import_images():
     i.import_images(data)
     assert len(i.images) > 0
     assert i.image('1990.30.0001').represents == "aa_1"
+
+
+def test_export_vases():
+    i = Importer()
+    collection_data = Path("tests/data/collections.csv")
+    i.import_collections(collection_data)
+    data = Path("tests/data/vases.json")
+    i.import_data(data)
+    i.export_vases("/tmp/foo.ttl")

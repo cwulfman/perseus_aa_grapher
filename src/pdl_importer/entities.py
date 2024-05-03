@@ -53,9 +53,9 @@ class Vase(Artifact):
         self._graph.add((self.id, RDF.type, aat['300132254']))
         self._graph.add((self.id, RDFS.label, Literal(self._data.name)))
         self._graph.add((self.id, crm['P1i_is_identified_by'], Literal(self._data.name)))
-        self.collection_uri = collection_index.get(self._data.collection)
-        if self.collection_uri:
-            self._graph.add((self.id, crm["P50_has_current_keeper"], URIRef(self.collection_uri)))
+        self.collection = collection_index.get(self._data.collection)
+        if self.collection:
+            self._graph.add((self.id, crm["P50_has_current_keeper"], URIRef(self.collection.uri)))
         # Make the remaining attributes notes for now
         # self._graph.add((self.id, crm['P3_has_note'], Literal(self._data.collection)))
         self._graph.add((self.id, crm['P3_has_note'], Literal(self._data.summary)))
