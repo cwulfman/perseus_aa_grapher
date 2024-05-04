@@ -54,3 +54,12 @@ def test_export_images():
     i.import_collections(collection_data)
     i.import_images(data)
     i.export_images("/tmp/test_images.ttl")
+
+
+def test_export_artifacts():
+    i = Importer()
+    collection_data = Path("tests/data/collections.csv")
+    i.import_collections(collection_data)
+    data = Path("tests/data/artifacts.json")
+    i.import_data(data)
+    i.export_artifacts("/tmp/test_artifacts.ttl")

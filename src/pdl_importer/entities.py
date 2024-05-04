@@ -2,7 +2,8 @@ from csv import DictReader
 from pathlib import Path
 from rdflib import Graph, Namespace, RDF, RDFS, URIRef, Literal
 from pydantic import BaseModel
-from pdl_importer.models import VaseData, GemData
+from pdl_importer.models import VaseData, GemData, CoinData, SculptureData
+from pdl_importer.models import SiteData, BuildingData
 
 crm = Namespace("http://www.cidoc-crm.org/cidoc-crm/")
 aat = Namespace("http://vocab.getty.edu/aat/")
@@ -20,6 +21,7 @@ image = Namespace("http://perseus.tufts.edu/ns/artifact/image/")
 class AAObject:
     def __init__(self, data:BaseModel) -> None:
         self.str_id:str = data.id
+        self.id = entity[self.str_id]
         self._data = data
         self.graph = Graph()
         self.graph.bind("crm", crm)
@@ -37,11 +39,15 @@ class AAObject:
 
 
 class Artifact(AAObject):
-    def __init__(self, data) -> None:
+    def __init__(self, data, collection_index) -> None:
         super().__init__(data)
-        self.id = entity[self.str_id]
         self.graph.add((self.id, RDFS.label, Literal(self._data.name)))
         self.graph.add((self.id, crm['P1i_is_identified_by'], Literal(self._data.name)))
+        if self._data.collection:
+            self.collection = collection_index.get(self._data.collection)
+            if self.collection:
+                self.graph.add((self.id, crm["P50_has_current_keeper"], URIRef(self.collection.id)))
+
 
     def __repr__(self) -> str:
         return f"Artifact('{self.id}')"
@@ -49,7 +55,7 @@ class Artifact(AAObject):
 
 class Vase(Artifact):
     def __init__(self, data:VaseData, collection_index) -> None:
-        super().__init__(data)
+        super().__init__(data, collection_index)
         # self.graph.bind("vase", vase)
         self.id = entity[self.str_id]
         self.graph.add((self.id, RDF.type, aat['300132254']))
@@ -68,7 +74,7 @@ class Vase(Artifact):
 
 class Gem(Artifact):
     def __init__(self, data:GemData, collection_index) -> None:
-        super().__init__(data)
+        super().__init__(data, collection_index)
         self.graph.add((self.id, RDF.type, aat['300011172']))
 
 
@@ -77,17 +83,30 @@ class Gem(Artifact):
 
 
 class Sculpture(Artifact):
-    pass
+    def __init__(self, data:SculptureData, collection_index) -> None:
+        super().__init__(data, collection_index)
+        self.graph.add((self.id, RDF.type, aat['sculpture']))
+
 
 class Coin(Artifact):
-    pass
+    def __init__(self, data:CoinData, collection_index) -> None:
+        super().__init__(data, collection_index)
+        self.graph.add((self.id, RDF.type, aat['coin']))
+
+
 
 class Building(AAObject):
-    pass
+    def __init__(self, data:BuildingData) -> None:
+        super().__init__(data)
+        self.graph.add((self.id, RDF.type, aat['building']))
 
 
 class Site(AAObject):
-    pass
+    def __init__(self, data:SiteData) -> None:
+        super().__init__(data)
+        self.graph.add((self.id, RDF.type, aat['site']))
+
+
 
 
 class Image:

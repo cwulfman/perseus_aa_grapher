@@ -3,7 +3,8 @@ from csv import DictReader
 from pathlib import Path
 from rdflib import Graph, Namespace, RDF, RDFS, URIRef, Literal
 from pdl_importer.models import VaseData, ImageData, CollectionData, GemData
-from pdl_importer.entities import Vase, Image, Collection, Gem
+from pdl_importer.models import ArtifactData, SculptureData, CoinData, BuildingData, SiteData
+from pdl_importer.entities import Artifact, Vase, Image, Collection, Gem, Sculpture, Building, Site, Coin
 
 from pdl_importer.entities import crm, entity, aat
 
@@ -33,18 +34,26 @@ class Importer:
             data = json.load(f)
         for o in data['object']:
             otype = o['type']
-
+            obj = None
             if otype == 'Vase':
                 obj_data = VaseData(**o)
                 obj = Vase(obj_data, self.collections)
             elif otype == 'Gem':
                 obj = Gem(GemData(**o), self.collections)
+            elif otype == 'Sculpture':
+                obj = Sculpture(SculptureData(**o), self.collections)
+            elif otype == 'Coin':
+                obj = Coin(CoinData(**o), self.collections)
+            elif otype == 'Building':
+                obj = Building(BuildingData(**o))
+            elif otype == 'Site':
+                obj = Site(SiteData(**o))
 
-            else:
-                print(f"object type invalid: {otype}")
-
-            self.data_graph += obj.graph
-            self.artifacts.append(obj)
+            # else:
+                # obj = Artifact(ArtifactData(**o), self.collection)
+            if obj:
+                self.data_graph += obj.graph
+                self.artifacts.append(obj)
 
 
     def import_images(self, fpath) -> None:

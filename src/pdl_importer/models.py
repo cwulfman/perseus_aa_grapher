@@ -15,6 +15,54 @@ class CollectionData(BaseModel):
     uri: str
 
 
+
+class ArtifactData(BaseModel):
+    id: str | None
+    name: str | None
+    type: str | None
+    location: str | None
+    summary: str | None
+    perseus_version: str | None
+    entered_by: str | None
+    sources_used: str | None
+    other_bibliography: str | None
+    documentary_references: str | None
+    accession_number: str | None
+    dimensions: str | None
+    region: str | None
+    start_date: str | None
+    start_mod: str | None
+    end_date: str | None
+    end_mod: str | None
+    unitary_date: str | None
+    unitary_mod: str | None
+    date_for_sort: str | None
+    period: str | None
+    period_for_sort: str | None
+    culture: str | None
+    context: str | None
+    context_mod: str | None
+    findspot: str | None
+    findspot_mod: str | None
+    collection: str | None
+    date_description: str | None
+    collection_history: str | None
+    donor: str | None
+    condit: str | None
+    condition_description: str | None
+    comparanda: str | None
+    material: str | None
+    material_description: str | None
+    other_notes: str | None
+    architectural_order: str | None
+    architect: str | None
+    architect_evidence: str | None
+    building_type: str | None
+    history: str | None
+    plan: str | None
+    see_also: str | None
+
+
 class VaseData(BaseModel):
     id: str | None
     name: str | None
