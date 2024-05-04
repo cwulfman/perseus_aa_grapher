@@ -59,7 +59,14 @@ class Importer:
     def export_vases(self, fpath):
         g = Graph()
         for v in self.vases.values():
-            g += v._graph
+            g += v.graph
+        g.serialize(destination=fpath)
+
+
+    def export_collections(self, fpath):
+        g = Graph()
+        for v in self.collections.values():
+            g += v.graph
         g.serialize(destination=fpath)
 
 

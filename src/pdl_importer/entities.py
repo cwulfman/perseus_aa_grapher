@@ -21,18 +21,18 @@ class AAObject:
     def __init__(self, data:BaseModel) -> None:
         self.str_id:str = data.id
         self._data = data
-        self._graph = Graph()
-        self._graph.bind("crm", crm)
-        self._graph.bind("entity", entity)
-        self._graph.bind("aat", aat)
-        self._graph.bind("rdf", RDF)
-        self._graph.bind("rdfs", RDFS)
+        self.graph = Graph()
+        self.graph.bind("crm", crm)
+        self.graph.bind("entity", entity)
+        self.graph.bind("aat", aat)
+        self.graph.bind("rdf", RDF)
+        self.graph.bind("rdfs", RDFS)
         self.type:[str|None] = None
 
 
     @property
     def rdf(self):
-        return self._graph.serialize()
+        return self.graph.serialize()
 
 
 
@@ -48,17 +48,17 @@ class Artifact(AAObject):
 class Vase(Artifact):
     def __init__(self, data:VaseData, collection_index) -> None:
         super().__init__(data)
-        self._graph.bind("vase", vase)
+        self.graph.bind("vase", vase)
         self.id = entity[self.str_id]
-        self._graph.add((self.id, RDF.type, aat['300132254']))
-        self._graph.add((self.id, RDFS.label, Literal(self._data.name)))
-        self._graph.add((self.id, crm['P1i_is_identified_by'], Literal(self._data.name)))
+        self.graph.add((self.id, RDF.type, aat['300132254']))
+        self.graph.add((self.id, RDFS.label, Literal(self._data.name)))
+        self.graph.add((self.id, crm['P1i_is_identified_by'], Literal(self._data.name)))
         self.collection = collection_index.get(self._data.collection)
         if self.collection:
-            self._graph.add((self.id, crm["P50_has_current_keeper"], URIRef(self.collection.id)))
+            self.graph.add((self.id, crm["P50_has_current_keeper"], URIRef(self.collection.id)))
         # Make the remaining attributes notes for now
-        # self._graph.add((self.id, crm['P3_has_note'], Literal(self._data.collection)))
-        self._graph.add((self.id, crm['P3_has_note'], Literal(self._data.summary)))
+        # self.graph.add((self.id, crm['P3_has_note'], Literal(self._data.collection)))
+        self.graph.add((self.id, crm['P3_has_note'], Literal(self._data.summary)))
 
     def __repr__(self) -> str:
         return f"Vase('{self.id}')"
@@ -83,10 +83,10 @@ class Site(AAObject):
 
 class Image:
     def __init__(self, data) -> None:
-        self._graph = Graph()
-        self._graph.bind("crm", crm)
-        self._graph.bind("image", image)
-        self._graph.bind("entity", entity)
+        self.graph = Graph()
+        self.graph.bind("crm", crm)
+        self.graph.bind("image", image)
+        self.graph.bind("entity", entity)
         self.str_id = data.id
         self.id = image[self.str_id]
         self.caption = data.caption
@@ -94,16 +94,16 @@ class Image:
         self.represents = data.represents
         self._data = data
 
-        self._graph.add((self.id, RDF.type, crm['E36_Visual_Item']))
-        self._graph.add((self.id, crm['P138_represents'], entity[self.represents]))
-        self._graph.add((entity[self.represents], crm['P138i_is_represented_by'], self.id))
-        self._graph.add((self.id, crm['P3_has_note'], Literal(self.caption)))
-        self._graph.add((self.id, crm['P3_has_note'], Literal(self.credits)))
+        self.graph.add((self.id, RDF.type, crm['E36_Visual_Item']))
+        self.graph.add((self.id, crm['P138_represents'], entity[self.represents]))
+        self.graph.add((entity[self.represents], crm['P138i_is_represented_by'], self.id))
+        self.graph.add((self.id, crm['P3_has_note'], Literal(self.caption)))
+        self.graph.add((self.id, crm['P3_has_note'], Literal(self.credits)))
 
 
     @property
     def rdf(self):
-        return self._graph.serialize()
+        return self.graph.serialize()
 
 
 
@@ -116,23 +116,23 @@ class Collection():
         self.id = URIRef(data.uri)
 
 
-def vase_graph(vases) -> Graph:
+def vasegraph(vases) -> Graph:
     g = Graph()
     g.bind("crm", crm)
     g.bind("entity", entity)
     g.bind("aat", aat)
     for v in vases:
         vase = Vase(v)
-        g += vase._graph
+        g += vase.graph
     return g
 
 
-def image_graph(imgs) -> Graph:
+def imagegraph(imgs) -> Graph:
     g = Graph()
     g.bind("crm", crm)
     g.bind("image", image)
     g.bind("entity", entity)
     for i in imgs:
         img = Image(i)
-        g += img._graph
+        g += img.graph
     return g
