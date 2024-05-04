@@ -2,7 +2,7 @@ from csv import DictReader
 from pathlib import Path
 from rdflib import Graph, Namespace, RDF, RDFS, URIRef, Literal
 from pydantic import BaseModel
-from pdl_importer.models import VaseData
+from pdl_importer.models import VaseData, GemData
 
 crm = Namespace("http://www.cidoc-crm.org/cidoc-crm/")
 aat = Namespace("http://vocab.getty.edu/aat/")
@@ -39,7 +39,9 @@ class AAObject:
 class Artifact(AAObject):
     def __init__(self, data) -> None:
         super().__init__(data)
-
+        self.id = entity[self.str_id]
+        self.graph.add((self.id, RDFS.label, Literal(self._data.name)))
+        self.graph.add((self.id, crm['P1i_is_identified_by'], Literal(self._data.name)))
 
     def __repr__(self) -> str:
         return f"Artifact('{self.id}')"
@@ -48,7 +50,7 @@ class Artifact(AAObject):
 class Vase(Artifact):
     def __init__(self, data:VaseData, collection_index) -> None:
         super().__init__(data)
-        self.graph.bind("vase", vase)
+        # self.graph.bind("vase", vase)
         self.id = entity[self.str_id]
         self.graph.add((self.id, RDF.type, aat['300132254']))
         self.graph.add((self.id, RDFS.label, Literal(self._data.name)))
@@ -65,7 +67,14 @@ class Vase(Artifact):
 
 
 class Gem(Artifact):
-    pass
+    def __init__(self, data:GemData, collection_index) -> None:
+        super().__init__(data)
+        self.graph.add((self.id, RDF.type, aat['300011172']))
+
+
+    def __repr__(self) -> str:
+        return f"Gem('{self.id}')"
+
 
 class Sculpture(Artifact):
     pass
@@ -111,6 +120,7 @@ class Collection():
     def __init__(self, data) -> None:
         self.graph = Graph()
         self.graph.bind('crm', crm)
+        self.index = data.index
         self.name = data.name.strip()
         self.key = hash(self.name)
         self.id = URIRef(data.uri)

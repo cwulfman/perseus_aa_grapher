@@ -15,6 +15,11 @@ def vase_test_data():
     with open('tests/data/vases.json') as f:
         return json.load(f)
 
+@pytest.fixture
+def gem_test_data():
+    with open('tests/data/gems.json') as f:
+        return json.load(f)
+
 
 @pytest.fixture
 def collection_test_data():
