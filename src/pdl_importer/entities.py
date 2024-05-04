@@ -31,6 +31,8 @@ class AAObject:
         self.graph.bind("rdfs", RDFS)
         self.type:[str|None] = None
 
+        self.graph.add((self.id, RDF.type, crm['E22_Human-Made_Object']))
+
 
     @property
     def rdf(self):
