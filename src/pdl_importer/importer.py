@@ -65,6 +65,7 @@ class Importer:
 
     def export_collections(self, fpath):
         g = Graph()
+        breakpoint()
         for v in self.collections.values():
             g += v.graph
         g.serialize(destination=fpath)

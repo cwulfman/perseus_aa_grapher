@@ -114,7 +114,8 @@ class Collection():
         self.name = data.name.strip()
         self.key = hash(self.name)
         self.id = URIRef(data.uri)
-
+        self.graph.add((self.id, RDF.type, crm['E74_Group']))
+        self.graph.add((self.id, RDFS.label, Literal(self.name)))
 
 def vasegraph(vases) -> Graph:
     g = Graph()

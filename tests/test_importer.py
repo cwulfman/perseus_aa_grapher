@@ -38,4 +38,11 @@ def test_export_vases():
     i.import_collections(collection_data)
     data = Path("tests/data/vases.json")
     i.import_data(data)
-    i.export_vases("/tmp/foo.ttl")
+    i.export_vases("/tmp/test_vases.ttl")
+
+
+def test_export_collections():
+    i = Importer()
+    collection_data = Path("tests/data/collections.csv")
+    i.import_collections(collection_data)
+    i.export_collections("/tmp/test_collections.ttl")
