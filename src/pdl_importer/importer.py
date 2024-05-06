@@ -77,6 +77,8 @@ class Importer:
 
     def export_images(self, fpath):
         g = Graph()
+        g.bind('crm', crm)
+        g.bind('entity', entity)
         for v in self.images:
             g += v.graph
         g.serialize(destination=fpath)
@@ -84,6 +86,8 @@ class Importer:
 
     def export_collections(self, fpath):
         g = Graph()
+        g.bind('crm', crm)
+        g.bind('entity', entity)
         for v in self.collections.values():
             g += v.graph
         g.serialize(destination=fpath)
@@ -91,6 +95,8 @@ class Importer:
 
     def export_artifacts(self, fpath):
         g = Graph()
+        g.bind('crm', crm)
+        g.bind('entity', entity)
         for a in self.artifacts:
             g += a.graph
         g.serialize(destination=fpath)
