@@ -15,7 +15,7 @@ sculpture = Namespace("http://perseus.tufts.edu/ns/artifact/sculpture/")
 coin = Namespace("http://perseus.tufts.edu/ns/artifact/coin/")
 building = Namespace("http://perseus.tufts.edu/ns/building/")
 site = Namespace("http://perseus.tufts.edu/ns/artifact/site/")
-image = Namespace("http://perseus.tufts.edu/ns/artifact/image/")
+image = Namespace("http://perseus.tufts.edu/ns/artifact/images/")
 
 
 class AAObject:
@@ -41,6 +41,9 @@ class AAObject:
 
 
 class Artifact(AAObject):
+    """Artifact collects all the properties common to subclasses
+       of Artifact (vases, coins, gems, sculptures)
+    """
     def __init__(self, data, collection_index) -> None:
         super().__init__(data)
         self.graph.add((self.id, RDFS.label, Literal(self._data.name)))

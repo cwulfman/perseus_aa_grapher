@@ -6,7 +6,7 @@ from pdl_importer.models import VaseData, ImageData, CollectionData, GemData
 from pdl_importer.models import ArtifactData, SculptureData, CoinData, BuildingData, SiteData
 from pdl_importer.entities import Artifact, Vase, Image, Collection, Gem, Sculpture, Building, Site, Coin
 
-from pdl_importer.entities import crm, entity, aat
+from pdl_importer.entities import crm, entity, aat, image
 
 
 class Importer:
@@ -17,6 +17,7 @@ class Importer:
         self.data_graph.bind("aat", aat)
         self.data_graph.bind("rdf", RDF)
         self.data_graph.bind("rdfs", RDFS)
+        self.data_graph.bind("image", image)
         self.collections = {}
         self.images = []
         self.artifacts = []
@@ -48,9 +49,6 @@ class Importer:
                 obj = Building(BuildingData(**o))
             elif otype == 'Site':
                 obj = Site(SiteData(**o))
-
-            # else:
-                # obj = Artifact(ArtifactData(**o), self.collection)
             if obj:
                 self.data_graph += obj.graph
                 self.artifacts.append(obj)
@@ -79,6 +77,7 @@ class Importer:
         g = Graph()
         g.bind('crm', crm)
         g.bind('entity', entity)
+        g.bind('image', image)
         for v in self.images:
             g += v.graph
         g.serialize(destination=fpath)
@@ -99,74 +98,4 @@ class Importer:
         g.bind('entity', entity)
         for a in self.artifacts:
             g += a.graph
-        g.serialize(destination=fpath)
-
-class ImporterOld:
-    def __init__(self) -> None:
-        self.collections = {}
-        self.vases = {}
-        self.gems = {}
-        self.coins = {}
-        self.sculptures = {}
-        self.buildings = {}
-        self.sites = {}
-        self.images = {}
-
-    def import_collections(self, fpath) -> None:
-        with open(fpath, 'r') as f:
-            reader: DictReader = DictReader(f)
-            for row in reader:
-                c = CollectionData(**row)
-                self.collections[c.index] = Collection(c)
-
-
-    def import_data(self, fpath) -> None:
-        with open(fpath, 'r') as f:
-            data = json.load(f)
-        for o in data['object']:
-            otype = o['type']
-
-            if otype == 'Vase':
-                vase_data = VaseData(**o)
-                vase = Vase(vase_data, self.collections)
-                self.vases[vase.str_id] = vase
-            else:
-                print(f"object type invalid: {otype}")
-
-
-    def import_images(self, fpath) -> None:
-        with open(fpath, 'r') as f:
-            data = json.load(f)
-        for img in data['image']:
-            image_data = ImageData(**img)
-            image = Image(image_data)
-            self.images[image.str_id] = image
-
-
-    def collection(self, index):
-        return self.collections.get(index)
-
-
-    def image(self, index):
-        return self.images.get(index)
-
-
-    def export_vases(self, fpath):
-        g = Graph()
-        for v in self.vases.values():
-            g += v.graph
-        g.serialize(destination=fpath)
-
-
-    def export_collections(self, fpath):
-        g = Graph()
-        for v in self.collections.values():
-            g += v.graph
-        g.serialize(destination=fpath)
-
-
-    def export_images(self, fpath):
-        g = Graph()
-        for v in self.images.values():
-            g += v.graph
         g.serialize(destination=fpath)
