@@ -30,7 +30,7 @@
 |
 
 =====================================
-Perseus Art &amp; Archaeology Grapher
+Perseus Art and Archaeology Grapher
 =====================================
 
 This repository contains classes and scripts that may be used to
