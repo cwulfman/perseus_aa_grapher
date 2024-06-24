@@ -1,5 +1,6 @@
 from csv import DictReader
 from pathlib import Path
+from typing import Union
 from rdflib import Graph, Namespace, RDF, RDFS, URIRef, Literal
 from pydantic import BaseModel
 from pdl_importer.models import VaseData, GemData, CoinData, SculptureData
@@ -15,7 +16,8 @@ sculpture = Namespace("http://perseus.tufts.edu/ns/artifact/sculpture/")
 coin = Namespace("http://perseus.tufts.edu/ns/artifact/coin/")
 building = Namespace("http://perseus.tufts.edu/ns/building/")
 site = Namespace("http://perseus.tufts.edu/ns/artifact/site/")
-image = Namespace("http://perseus.tufts.edu/ns/artifact/images/")
+# image = Namespace("http://127.0.0.1:8182/iiif/3/")
+image = Namespace("https://iiif-dev.perseus.tufts.edu/iiif/3/")
 
 
 class AAObject:
@@ -29,7 +31,7 @@ class AAObject:
         self.graph.bind("aat", aat)
         self.graph.bind("rdf", RDF)
         self.graph.bind("rdfs", RDFS)
-        self.type:[str|None] = None
+        self.type:Union[str, None] = None
 
         self.graph.add((self.id, RDF.type, crm['E22_Human-Made_Object']))
 
@@ -47,12 +49,21 @@ class Artifact(AAObject):
     def __init__(self, data, collection_index) -> None:
         super().__init__(data)
         self.graph.add((self.id, RDFS.label, Literal(self._data.name)))
-        self.graph.add((self.id, crm['P1i_is_identified_by'], Literal(self._data.name)))
+        self.graph.add((self.id, crm['P1i_is_identified_by'],
+                        Literal(self._data.name)))
         if self._data.collection:
             self.collection = collection_index.get(self._data.collection)
             if self.collection:
-                self.graph.add((self.id, crm["P50_has_current_keeper"], URIRef(self.collection.id)))
-
+                self.graph.add((self.id, crm["P50_has_current_keeper"],
+                                URIRef(self.collection.id)))
+        # Make the rest of the attributes, save collection and image,
+        # notes for now.
+        fields = self._data.model_dump()
+        for k,v in fields.items():
+            if v and k not in ["collection", "image"]:
+                self.graph.add((self.id, crm['P3_has_note'],
+                                Literal(f"{k}: {v}")
+                                ))
 
     def __repr__(self) -> str:
         return f"Artifact('{self.id}')"
@@ -62,16 +73,8 @@ class Vase(Artifact):
     def __init__(self, data:VaseData, collection_index) -> None:
         super().__init__(data, collection_index)
         # self.graph.bind("vase", vase)
-        self.id = entity[self.str_id]
+        # self.id = entity[self.str_id]
         self.graph.add((self.id, RDF.type, aat['300132254']))
-        self.graph.add((self.id, RDFS.label, Literal(self._data.name)))
-        self.graph.add((self.id, crm['P1i_is_identified_by'], Literal(self._data.name)))
-        self.collection = collection_index.get(self._data.collection)
-        if self.collection:
-            self.graph.add((self.id, crm["P50_has_current_keeper"], URIRef(self.collection.id)))
-        # Make the remaining attributes notes for now
-        # self.graph.add((self.id, crm['P3_has_note'], Literal(self._data.collection)))
-        self.graph.add((self.id, crm['P3_has_note'], Literal(self._data.summary)))
 
     def __repr__(self) -> str:
         return f"Vase('{self.id}')"

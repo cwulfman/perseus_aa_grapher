@@ -1,3 +1,14 @@
+"""
+importer.py
+
+This module provides a class that imports data from CSV files containing
+data about collections, artifacts, and images and converts that data into
+graphs.  It can serialize the graphs to files.
+
+In order to create links between artifacts and the collections that own them,
+the Importer must first import collections data.
+"""
+
 import json
 from csv import DictReader
 from pathlib import Path

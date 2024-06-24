@@ -39,6 +39,14 @@ def test_export_vases():
     i.import_data(data)
     i.export_artifacts("/tmp/test_vases.ttl")
 
+def test_export_gems():
+    i = Importer()
+    collection_data = Path("tests/data/collections.csv")
+    i.import_collections(collection_data)
+    data = Path("tests/data/gems.json")
+    i.import_data(data)
+    i.export_artifacts("/tmp/test_gems.ttl")
+
 
 def test_export_collections():
     i = Importer()
